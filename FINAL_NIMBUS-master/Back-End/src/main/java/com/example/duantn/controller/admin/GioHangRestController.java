@@ -55,6 +55,15 @@ public class GioHangRestController {
                     .body(Collections.singletonMap("error", "Lỗi khi xóa sản phẩm khỏi giỏ hàng: " + e.getMessage()));
         }
     }
+    @DeleteMapping("/xoa-tat-ca/{idNguoiDung}")
+    public ResponseEntity<String> xoaTatCaSanPhamKhoiGioHang(@PathVariable Integer idNguoiDung) {
+        try {
+            gioHangService.xoaTatCaSanPhamKhoiGioHangKhongCapNhatSoLuong(idNguoiDung);
+            return ResponseEntity.ok("Đã xóa tất cả sản phẩm trong giỏ hàng.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
     @PutMapping("/cap-nhat/{idNguoiDung}/{idSanPhamChiTiet}")
     public ResponseEntity<Map<String, String>> capNhatSoLuong(@PathVariable Integer idNguoiDung,
                                                               @PathVariable Integer idSanPhamChiTiet,

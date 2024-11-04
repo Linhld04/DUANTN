@@ -31,6 +31,7 @@ public class SanPham {
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayTao;
 
+
     @Column(name = "ngay_cap_nhat")
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayCapNhat;

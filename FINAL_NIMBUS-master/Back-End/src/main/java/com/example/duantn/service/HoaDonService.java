@@ -1,12 +1,8 @@
 package com.example.duantn.service;
 
-import com.example.duantn.dto.HoaDonDTO;
-import com.example.duantn.dto.HoaDonResponseDTO;
-import com.example.duantn.dto.HoaDonUpdateDTO;
+import com.example.duantn.dto.*;
 
-import com.example.duantn.entity.HoaDon;
-import com.example.duantn.entity.PtThanhToanHoaDon;
-import com.example.duantn.entity.TrangThaiHoaDon;
+import com.example.duantn.entity.*;
 import com.example.duantn.repository.HoaDonRepository;
 import com.example.duantn.repository.PhuongThucThanhToanHoaDonRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -20,6 +16,7 @@ import java.io.IOException;
 import org.apache.poi.ss.usermodel.*;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -153,4 +150,5 @@ public class HoaDonService {
             throw new Exception("Không tìm thấy hóa đơn với ID: " + idHoaDon);
         }
     }
-}
+    }
+

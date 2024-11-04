@@ -1,19 +1,21 @@
 package com.example.duantn.controller.admin;
 
-import com.example.duantn.dto.HoaDonUpdateDTO;
-import com.example.duantn.dto.HoaDonDTO;
-import com.example.duantn.dto.HoaDonResponseDTO;
+import com.example.duantn.dto.*;
 import com.example.duantn.entity.HoaDon;
 import com.example.duantn.entity.NguoiDung;
 import com.example.duantn.entity.TrangThaiHoaDon;
 import com.example.duantn.service.HoaDonService;
+import com.example.duantn.service.InvoicePDFService;
 import com.example.duantn.service.NguoiDungService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +29,8 @@ public class HoaDonRestController {
     private HoaDonService hoaDonService;
     @Autowired
     private NguoiDungService nguoiDungService;
+    @Autowired
+    private InvoicePDFService invoicePDFService;
 
     @GetMapping("/nguoi-dung")
     public List<NguoiDung> getNguoiDung() {
@@ -44,14 +48,21 @@ public class HoaDonRestController {
         return ResponseEntity.ok(hoaDonList);
     }
     @PostMapping("/create")
-    public HoaDon createHoaDon(@RequestBody HoaDon hoaDon) {
+    public ResponseEntity<?> createHoaDon(@RequestBody HoaDon hoaDon) {
         System.out.println("Nhận được dữ liệu hóa đơn: " + hoaDon);
+
+        // Kiểm tra ID người dùng
+        if (hoaDon.getNguoiDung() == null || hoaDon.getNguoiDung().getId() == null) {
+            return ResponseEntity.badRequest().body("Vui lòng chọn người dùng để tạo hóa đơn!!.");
+        }
+
         NguoiDung nguoiDung = nguoiDungService.findById(hoaDon.getNguoiDung().getId());
         if (nguoiDung != null) {
             hoaDon.setNguoiDung(nguoiDung);
-            return hoaDonService.createHoaDon(hoaDon);
+            HoaDon createdHoaDon = hoaDonService.createHoaDon(hoaDon);
+            return ResponseEntity.ok(createdHoaDon);
         } else {
-            throw new RuntimeException("Người dùng không tồn tại");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Người dùng không tồn tại.");
         }
     }
 

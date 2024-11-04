@@ -13,27 +13,14 @@ import java.util.Date;
 public class LoaiVoucher {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id_loai_voucher")
-    private Integer id;
+    private int id_loai_voucher;
 
-    @Column(name = "ten_loai_voucher", nullable = false)
-    private String tenLoaiVoucher;
+    private String ten_loai_voucher;
+    private String mo_ta;
 
-    @Column(name = "mo_ta")
-    private String moTa;
+    @Column(columnDefinition = "DATETIME DEFAULT GETDATE()")
+    private Date ngay_tao;
 
-    @Column(name = "ngay_tao", updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date ngayTao;
-
-    @Column(name = "ngay_cap_nhat")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date ngayCapNhat;
-
-    @ManyToOne
-    @JoinColumn(name = "id_voucher")
-    private Voucher voucher;
-    @ManyToOne
-    @JoinColumn(name = "id_san_pham")
-    private SanPham sanPham;
+    @Column(columnDefinition = "DATETIME DEFAULT GETDATE()")
+    private Date ngay_cap_nhat;
 }

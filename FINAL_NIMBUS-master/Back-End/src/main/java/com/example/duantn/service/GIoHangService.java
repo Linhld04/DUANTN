@@ -111,6 +111,24 @@ public class GIoHangService {
         }
     }
     @Transactional
+    public void xoaTatCaSanPhamKhoiGioHangKhongCapNhatSoLuong(Integer idNguoiDung) {
+        // Tìm giỏ hàng của người dùng
+        GioHang gioHang = gioHangRepository.findByIdNguoiDung(idNguoiDung);
+        if (gioHang == null) {
+            throw new RuntimeException("Giỏ hàng không tồn tại.");
+        }
+
+        // Lấy danh sách tất cả chi tiết giỏ hàng
+        List<GioHangChiTiet> gioHangChiTietList = gioHangChiTietRepository.findByGioHang(gioHang);
+
+        // Xóa từng chi tiết giỏ hàng mà không cập nhật lại số lượng sản phẩm trong kho
+        gioHangChiTietRepository.deleteAll(gioHangChiTietList);
+
+        // Xóa giỏ hàng sau khi đã xóa tất cả chi tiết
+        gioHangRepository.delete(gioHang);
+    }
+
+    @Transactional
     public void capNhatSoLuong(Integer idNguoiDung, Integer idSanPhamChiTiet, Integer soLuong) {
         GioHang gioHang = gioHangRepository.findByIdNguoiDung(idNguoiDung);
         if (gioHang == null) {
