@@ -15,4 +15,6 @@ public class HoaDonUpdateDTO {
     private Date ngayThanhToan;
     private BigDecimal thanhTien;
     private int idPtThanhToanHoaDon;
+    private Integer trangThaiHoaDon;
+    private String setSdtNguoiNhan;
 }

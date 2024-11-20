@@ -14,6 +14,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
             "FROM HoaDon h WHERE h.trangThai = false")
     List<Object[]> findHoaDonChuaThanhToan();
     List<HoaDon> findAllByTrangThaiFalse();
+    HoaDon findTopByOrderByIdHoaDonDesc();
     @Query("SELECT new com.example.duantn.dto.HoaDonDTO( " +
             "hd.idHoaDon, " +
             "tthd.id, " +

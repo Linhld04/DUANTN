@@ -16,4 +16,5 @@ public class HoaDonResponseDTO {
     private Date ngayThanhToan;
     private BigDecimal thanhTien;
     private int idPtThanhToanHoaDon;
+
 }

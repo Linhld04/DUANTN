@@ -37,7 +37,8 @@ public class PtThanhToanHoaDonController {
         String maHoaDon = hoaDon.getMaHoaDon();
 
         paymentMethod.setPhuongThucThanhToan(phuongThuc);
-
+        paymentMethod.setHoaDon(hoaDon);
+        paymentMethod.setTrangThai("Hoàn Thành");
         PtThanhToanHoaDon createdPaymentMethod = ptThanhToanHoaDonService.createPaymentMethod(paymentMethod);
 
         return new ResponseEntity<>(createdPaymentMethod, HttpStatus.CREATED);
