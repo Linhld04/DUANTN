@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 public class HoaDonRestController {
     @Autowired
     private HoaDonService hoaDonService;
+
     @Autowired
     private NguoiDungService nguoiDungService;
     @Autowired
@@ -92,11 +93,26 @@ public class HoaDonRestController {
         return ResponseEntity.ok(hoaDon);
     }
 
+
     @PutMapping("/{id}/update-status")
-    public ResponseEntity<String> updateInvoiceStatus(@PathVariable Integer id) {
-        boolean isUpdated = hoaDonService.updateInvoiceStatus(id, true);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> updateInvoiceStatus(@PathVariable Integer id) {
+        try {
+            boolean isUpdated = hoaDonService.updateInvoiceStatus(id, true);
+
+            if (isUpdated) {
+                HoaDon updatedInvoice = hoaDonService.getInvoiceById(id);
+                return ResponseEntity.ok(updatedInvoice);
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Không thể cập nhật trạng thái hóa đơn.");
+            }
+        } catch (Exception e) {
+            // Xử lý lỗi bất ngờ
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Đã xảy ra lỗi trong quá trình cập nhật: " + e.getMessage());
+        }
     }
+
     @PutMapping("/cap-nhat/{id}")
     public ResponseEntity<HoaDonResponseDTO> updateHoaDon(
             @PathVariable int id,

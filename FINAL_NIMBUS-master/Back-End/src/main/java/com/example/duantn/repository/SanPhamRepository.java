@@ -16,6 +16,11 @@ import java.util.List;
 public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
     @Query(value = SanPhamQuery.BASE_QUERY, nativeQuery = true)
     List<Object[]> getAllSanPham();
+    @Query(value = SanPhamQuery.GET_SAN_PHAM_BAN_HANG, nativeQuery = true)
+    List<Object[]> getAllSanPhamBanHang();
+    @Query(value = SanPhamQuery.GET_SAN_PHAM_CHI_TIET, nativeQuery = true)
+    List<Object[]> getSanPhamCTBanHang(@Param("id_san_pham") Integer id_san_pham);
+
 
     @Query(value = SanPhamQuery.GET_SAN_PHAM_BY_DANH_MUC, nativeQuery = true)
     List<Object[]> getSanPhamByDanhMuc(@Param("idDanhMuc") Integer idDanhMuc);
@@ -25,6 +30,7 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
 
     @Query(value = SanPhamQuery.GET_SAN_PHAM_AD, nativeQuery = true)
     List<Object[]> getAllSanPhamAD();
+
 
     @Modifying
     @Transactional

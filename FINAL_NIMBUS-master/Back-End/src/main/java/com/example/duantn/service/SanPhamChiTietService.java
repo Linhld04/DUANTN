@@ -58,6 +58,7 @@ public class SanPhamChiTietService {
     public List<SanPhamChiTietDTO> getAllSanPhamChiTiet() {
         return sanPhamChiTietRepository.findAllSanPhamChiTietDetails();
     }
+
     public void deleteById(Integer idSanPhamCT) {
         sanPhamChiTietRepository.deleteById(idSanPhamCT);
     }

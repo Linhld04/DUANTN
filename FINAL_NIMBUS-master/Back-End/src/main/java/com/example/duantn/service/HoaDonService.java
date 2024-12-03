@@ -17,6 +17,7 @@ import org.apache.poi.ss.usermodel.*;
 import java.io.ByteArrayOutputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -143,7 +144,11 @@ public class HoaDonService {
         }
         return false;
     }
-
+    public HoaDon getInvoiceById(Integer id) {
+        // Gọi repository để tìm hóa đơn theo ID
+        return hoaDonRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Không tìm thấy hóa đơn với ID: " + id));
+    }
     @Transactional
     public HoaDonResponseDTO updateHoaDon(int idHoaDon, HoaDonUpdateDTO updateHoaDonDTO) {
         HoaDon hoaDon = hoaDonRepository.findById(idHoaDon)
@@ -167,7 +172,8 @@ public class HoaDonService {
             hoaDon.setVoucher(voucher);
         }
 
-        if (!existingPtThanhToan.getPhuongThucThanhToan().getId().equals(2)) {
+        if (!existingPtThanhToan.getPhuongThucThanhToan().getId().equals(2) &&
+                !existingPtThanhToan.getPhuongThucThanhToan().getId().equals(3)) {
             // Tạo trạng thái hóa đơn loại 5
             TrangThaiHoaDon trangThaiHoaDon1 = new TrangThaiHoaDon();
             trangThaiHoaDon1.setMoTa("Đã thanh toán thành công");

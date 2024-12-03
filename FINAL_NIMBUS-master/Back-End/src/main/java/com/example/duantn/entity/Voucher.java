@@ -22,6 +22,8 @@ public class Voucher {
 
     @Column(name = "ma_voucher", nullable = false, unique = true, length = 50)
     private String maVoucher;
+    @Column(name = "kieu_giam_gia")
+    private Boolean kieuGiamGia;
 
     @Column(name = "gia_tri_giam_gia", precision = 18, scale = 2)
     private BigDecimal giaTriGiamGia;
@@ -50,9 +52,7 @@ public class Voucher {
     @Column(name = "ngay_cap_nhat", columnDefinition = "DATETIME DEFAULT GETDATE()")
     private Date ngay_cap_nhat;
 
-    @ManyToOne
-    @JoinColumn(name = "id_loai_voucher", nullable = false)
-    private LoaiVoucher loaiVoucher;
+
     @ManyToOne
     @JoinColumn(name = "id_trang_thai_giam_gia", nullable = false)
     private TrangThaiGiamGia trangThaiGiamGia;

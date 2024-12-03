@@ -36,9 +36,9 @@ public class VoucherService {
         }
 
         // Kiểm tra loại voucher, chỉ áp dụng loại 1 hoặc loại 2
-        if (voucher.getLoaiVoucher() == null ||
-                (voucher.getLoaiVoucher().getId_loai_voucher() != 1 && voucher.getLoaiVoucher().getId_loai_voucher() != 2)) {
-            throw new IllegalArgumentException("Voucher không hợp lệ. Chỉ áp dụng voucher loại 1 hoặc loại 2.");
+        if (voucher.getKieuGiamGia() == null ||
+                (voucher.getKieuGiamGia() != true && voucher.getKieuGiamGia() != false)) {
+            throw new IllegalArgumentException("Voucher không hợp lệ. Chỉ áp dụng voucher kiểu giảm giá 0 hoặc 1");
         }
 
         // Kiểm tra điều kiện ngày (voucher chưa hết hạn và chưa bắt đầu)
@@ -85,9 +85,9 @@ public class VoucherService {
         }
 
         // Kiểm tra loại voucher, chỉ áp dụng loại 1 hoặc loại 2
-        if (voucher.getLoaiVoucher() == null ||
-                (voucher.getLoaiVoucher().getId_loai_voucher() != 1 && voucher.getLoaiVoucher().getId_loai_voucher() != 2)) {
-            throw new IllegalArgumentException("Voucher không hợp lệ. Chỉ áp dụng voucher loại 1 hoặc loại 2.");
+        if (voucher.getKieuGiamGia() == null ||
+                (voucher.getKieuGiamGia() != true && voucher.getKieuGiamGia() != false)) {
+            throw new IllegalArgumentException("Voucher không hợp lệ. Chỉ áp dụng voucher kiểu giảm giá 0 hoặc 1");
         }
 
         // Kiểm tra điều kiện ngày (voucher chưa hết hạn và chưa bắt đầu)
@@ -110,7 +110,9 @@ public class VoucherService {
         if (voucher.getGiaTriToiDa() != null && tongTien.compareTo(voucher.getGiaTriToiDa()) > 0) {
             throw new IllegalArgumentException("Tổng tiền vượt quá mức tối đa để áp dụng voucher.");
         }
-
+        // Nếu tất cả điều kiện đều thỏa mãn, giảm số lượng voucher
+        voucher.setSoLuong(voucher.getSoLuong() - 1);
+        voucherRepository.save(voucher);
         return voucher;
     }
 
@@ -119,8 +121,8 @@ public class VoucherService {
                 .stream()
                 .filter(voucher ->
                         voucher.getSoLuong() > 0 &&
-                                (voucher.getLoaiVoucher().getId_loai_voucher() == 1 ||
-                                        voucher.getLoaiVoucher().getId_loai_voucher() == 2) &&
+                                (voucher.getKieuGiamGia() == true ||
+                                        voucher.getKieuGiamGia() == false) &&
                                 voucher.getSoTienToiThieu().compareTo(tongTien) <= 0 &&
 
                                 (voucher.getGiaTriToiDa() == null || voucher.getGiaTriToiDa().compareTo(tongTien) >= 0) &&
@@ -142,8 +144,8 @@ public class VoucherService {
                 .peek(voucher -> {
                     // Kiểm tra các điều kiện để voucher có thể sử dụng được hay không
                     boolean isUsable = voucher.getSoLuong() > 0 &&
-                            (voucher.getLoaiVoucher().getId_loai_voucher() == 1 ||
-                                    voucher.getLoaiVoucher().getId_loai_voucher() == 2) &&
+                            (voucher.getKieuGiamGia() == true ||
+                                    voucher.getKieuGiamGia() == false) &&
                             voucher.getSoTienToiThieu().compareTo(tongTien) <= 0 &&
                             (voucher.getGiaTriToiDa() == null || voucher.getGiaTriToiDa().compareTo(tongTien) >= 0) &&
                             !voucher.getNgayKetThuc().before(currentDate) &&
