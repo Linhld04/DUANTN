@@ -3,7 +3,6 @@ package com.example.duantn.dto;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -16,4 +15,5 @@ public class HoaDonResponseDTO {
     private Date ngayThanhToan;
     private BigDecimal thanhTien;
     private int idPtThanhToanHoaDon;
+
 }

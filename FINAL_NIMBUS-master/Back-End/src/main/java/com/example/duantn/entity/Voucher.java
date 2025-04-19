@@ -3,7 +3,8 @@ package com.example.duantn.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -15,32 +16,71 @@ import java.time.LocalDateTime;
 public class Voucher {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer IdVoucher;
+    @Column(name = "Id_voucher")
+    private Integer idVoucher;
 
-    @Column(name = "ma_voucher", nullable = false, unique = true)
+    @Column(name = "ma_voucher", unique = true, nullable = false)
     private String maVoucher;
+    @Column(name = "ten_voucher")
+    private String  tenVoucher;
 
-    @Column(name = "phan_tram_giam")
-    private Double phanTramGiamGia;
+    @Column(name = "gia_tri_giam_gia")
+    private BigDecimal giaTriGiamGia;
 
     @Column(name = "so_luong")
     private Integer soLuong;
 
-    @Column(name = "trang_thai", columnDefinition = "BIT DEFAULT 1")
-    private Boolean trangThai;
+    @Column(name = "gia_tri_toi_da")
+    private BigDecimal giaTriToiDa;
+
+    @Column(name = "kieu_giam_gia")
+    private Boolean kieuGiamGia;
+
+    @Column(name = "so_tien_toi_thieu")
+    private BigDecimal soTienToiThieu;
 
     @Column(name = "mo_ta")
     private String moTa;
 
     @Column(name = "ngay_bat_dau")
-    private LocalDateTime ngayBatDau;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date ngayBatDau;
 
     @Column(name = "ngay_ket_thuc")
-    private LocalDateTime ngayKetThuc;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date ngayKetThuc;
 
-    @Column(name = "ngay_tao", columnDefinition = "DATETIME DEFAULT GETDATE()")
-    private LocalDateTime ngayTao;
+    @Column(name = "ngay_tao", updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date ngayTao = new Date();
 
-    @Column(name = "ngay_cap_nhat", columnDefinition = "DATETIME DEFAULT GETDATE()")
-    private LocalDateTime ngayCapNhat;
+    @Column(name = "ngay_cap_nhat")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date ngayCapNhat = new Date();
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_trang_thai_giam_gia")
+    private TrangThaiGiamGia trangThaiGiamGia;
+
+    @PrePersist
+    protected void onCreate() {
+        ngayTao = new Date();
+        ngayCapNhat = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        ngayCapNhat = new Date();
+    }
+    @Transient
+    private boolean isUsable;
+
+    public boolean getIsUsable() {
+        return isUsable;
+    }
+
+    public void setIsUsable(boolean isUsable) {
+        this.isUsable = isUsable;
+    }
+
 }

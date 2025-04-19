@@ -1,42 +1,39 @@
 package com.example.duantn.controller.admin;
 
-import com.example.duantn.dto.HoaDonUpdateDTO;
 import com.example.duantn.dto.HoaDonDTO;
 import com.example.duantn.dto.HoaDonResponseDTO;
+import com.example.duantn.dto.HoaDonUpdateDTO;
 import com.example.duantn.entity.HoaDon;
 import com.example.duantn.entity.NguoiDung;
-import com.example.duantn.entity.TrangThaiHoaDon;
 import com.example.duantn.service.HoaDonService;
 import com.example.duantn.service.NguoiDungService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
-@RequestMapping("/api/hoa-don")
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+@RequestMapping("/api/admin/hoa_don_ban_hang")
+@CrossOrigin(origins = "http://127.0.0.1:5501")
 public class HoaDonRestController {
     @Autowired
     private HoaDonService hoaDonService;
+
     @Autowired
     private NguoiDungService nguoiDungService;
 
+
     @GetMapping("/nguoi-dung")
     public List<NguoiDung> getNguoiDung() {
-        return nguoiDungService.getAllNguoiDung();
+        return nguoiDungService.getAllNguoiDungsByRoleId();
     }
 
     @GetMapping("/chua-thanh-toan")
-    public List<HoaDon> getHoaDonChuaThanhToan() {
-        List<HoaDon> hoaDonList = hoaDonService.getHoaDonChuaThanhToan();
-        return hoaDonList.size() > 5 ? hoaDonList.subList(0, 5) : hoaDonList;
+    public ResponseEntity<List<HoaDon>> getHDChuaThanhToan() {
+        List<HoaDon> hoaDons = hoaDonService.getHoaDonChuaThanhToan();
+        return ResponseEntity.ok(hoaDons);  // Trả về danh sách HoaDon
     }
     @GetMapping("/get-hoa-don")
     public ResponseEntity<List<HoaDonDTO>> getHoaDonWithDetails() {
@@ -44,14 +41,28 @@ public class HoaDonRestController {
         return ResponseEntity.ok(hoaDonList);
     }
     @PostMapping("/create")
-    public HoaDon createHoaDon(@RequestBody HoaDon hoaDon) {
+    public ResponseEntity<?> createHoaDon(@RequestBody HoaDon hoaDon, @RequestParam Integer idNhanVien) {
         System.out.println("Nhận được dữ liệu hóa đơn: " + hoaDon);
-        NguoiDung nguoiDung = nguoiDungService.findById(hoaDon.getNguoiDung().getId());
+
+        // Kiểm tra nếu người dùng chưa được chọn
+        if (hoaDon.getNguoiDung() == null || hoaDon.getNguoiDung().getIdNguoiDung() == null) {
+            return ResponseEntity.badRequest().body("Vui lòng chọn người dùng để tạo hóa đơn!!.");
+        }
+
+        // Lấy thông tin người dùng từ service
+        NguoiDung nguoiDung = nguoiDungService.findById(hoaDon.getNguoiDung().getIdNguoiDung());
         if (nguoiDung != null) {
+            // Gán người dùng và nhân viên vào hóa đơn
             hoaDon.setNguoiDung(nguoiDung);
-            return hoaDonService.createHoaDon(hoaDon);
+            hoaDon.setIdNhanVien(idNhanVien);
+
+            // Gọi service để tạo hóa đơn và trạng thái hóa đơn với idNhanVien
+            HoaDon createdHoaDon = hoaDonService.createHoaDon(hoaDon, idNhanVien);
+
+            // Trả về response với hóa đơn vừa tạo
+            return ResponseEntity.ok(createdHoaDon);
         } else {
-            throw new RuntimeException("Người dùng không tồn tại");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Người dùng không tồn tại.");
         }
     }
 
@@ -73,48 +84,33 @@ public class HoaDonRestController {
         return ResponseEntity.ok(hoaDon);
     }
 
+
     @PutMapping("/{id}/update-status")
-    public ResponseEntity<String> updateInvoiceStatus(@PathVariable Integer id) {
-        boolean isUpdated = hoaDonService.updateInvoiceStatus(id, true);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> updateInvoiceStatus(@PathVariable Integer id) {
+        try {
+            boolean isUpdated = hoaDonService.updateInvoiceStatus(id, true);
+
+            if (isUpdated) {
+                HoaDon updatedInvoice = hoaDonService.getInvoiceById(id);
+                return ResponseEntity.ok(updatedInvoice);
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Không thể cập nhật trạng thái hóa đơn.");
+            }
+        } catch (Exception e) {
+            // Xử lý lỗi bất ngờ
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Đã xảy ra lỗi trong quá trình cập nhật: " + e.getMessage());
+        }
     }
+
     @PutMapping("/cap-nhat/{id}")
     public ResponseEntity<HoaDonResponseDTO> updateHoaDon(
             @PathVariable int id,
-            @RequestBody HoaDonUpdateDTO updateHoaDonDTO) {
-        HoaDonResponseDTO updatedResponse = hoaDonService.updateHoaDon(id, updateHoaDonDTO);
+            @RequestBody HoaDonUpdateDTO updateHoaDonDTO,
+            @RequestParam Integer idNhanVien) { // Nhận idNhanVien từ request parameter
+        HoaDonResponseDTO updatedResponse = hoaDonService.updateHoaDon(id, updateHoaDonDTO, idNhanVien);
         return ResponseEntity.ok(updatedResponse);
     }
 
-    @GetMapping("/export")
-    public ResponseEntity<byte[]> exportInvoices() {
-        try {
-            byte[] excelFile = hoaDonService.exportInvoicesToExcel();
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "attachment; filename=hoa_don.xlsx");
-            return new ResponseEntity<>(excelFile, headers, HttpStatus.OK);
-        } catch (IOException e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    @PutMapping("/cap-nhat-trang-thai/{idHoaDon}")
-    public ResponseEntity<Map<String, String>> capNhatTrangThaiHoaDon(
-            @PathVariable int idHoaDon,
-            @RequestParam("idTrangThaiMoi") int idTrangThaiMoi) {
-        try {
-            TrangThaiHoaDon trangThaiMoi = new TrangThaiHoaDon();
-            trangThaiMoi.setId(idTrangThaiMoi);
-            hoaDonService.capNhatTrangThaiHoaDon(idHoaDon, trangThaiMoi);
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "Cập nhật trạng thái hóa đơn thành công.");
-
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Không tìm thấy hóa đơn với ID: " + idHoaDon);
-
-            return ResponseEntity.status(404).body(errorResponse);
-        }
-    }
 }
