@@ -1,7 +1,6 @@
 package com.example.duantn.controller.admin;
 
 import com.example.duantn.entity.ChatLieu;
-import com.example.duantn.entity.ChatLieu;
 import com.example.duantn.service.ChatLieuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,16 +10,16 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/ad_chat_lieu")
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+@RequestMapping("/api/admin/chat_lieu")
+@CrossOrigin(origins = "http://127.0.0.1:5501")
 public class ADChatLieuController {
     @Autowired
     private ChatLieuService chatLieuService;
 
     @GetMapping
     public ResponseEntity<List<ChatLieu>> getAllChatLieu() {
-        List<ChatLieu> ChatLieucList = chatLieuService.getAllChatLieu();
-        return new ResponseEntity<>(ChatLieucList, HttpStatus.OK);
+        List<ChatLieu> chatLieucList = chatLieuService.getAllChatLieu();
+        return new ResponseEntity<>(chatLieucList, HttpStatus.OK);
     }
     @GetMapping("/{tenChatLieu}")
     public ResponseEntity<List<ChatLieu>> searchChatLieu(@PathVariable String tenChatLieu) {

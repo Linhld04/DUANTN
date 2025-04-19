@@ -1,23 +1,57 @@
 package com.example.duantn.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@ToString
 public class HoaDonDTO {
-    private int idHoaDon;
-    private String maHoaDon;
-    private String tenNguoiDung;
-    private String sdtNguoiDung;
-    private Date ngayTao;
-    private String tenPhuongThuc;
-    private BigDecimal tongTien;
+	private Integer cartId;
+	private Integer idHoaDon;
+	private String maHoaDon;
+	private String tenNguoiNhan;
+	private BigDecimal phiShip;
+	private String diaChi;
+	private String diaChiCuThe;
+	private String sdtNguoiNhan;
+	private String ghiChu;
+	private Integer tinh;
+	private Integer huyen;
+	private String xa;
+	private String tenTinh; // Thêm trường tên Tỉnh
+	private String tenHuyen; // Thêm trường tên Huyện
+	private String tenXa;    // Thêm trường tên Xã
+	private String email;
+	private Integer idDiaChiVanChuyen;
+	private Integer idNguoiDung;
+	private Date ngayTao;
+	private Integer idvoucher;
+	private Integer idphuongthucthanhtoanhoadon;
+	private String tenPhuongThucThanhToan;
+	private BigDecimal thanhTien;
+	private List<SanPhamChiTietDTO> listSanPhamChiTiet;
+	private Integer idTrangThaiHoaDon;
+	private String tenTrangThai;
+	private Integer idLoaiTrangThai;
+	private String tenLoaiTrangThai;
+	private Integer Loai;
+	private String Mavoucher;
+	private BigDecimal GiaTriMavoucher;
+	private BigDecimal giaTriGiamGia;
+	private Boolean kieuGiamGia;
 
-    private int loai;
+	// Thêm trường ngày giao dự kiến
+	private Date ngayGiaoDuKien;
+
+	private Date ngayKetThucGiaoDuKien;
+
+
 }
